@@ -1,0 +1,6 @@
+"Metric","Logistic_Regression","Decision_Tree"
+"Accuracy",77.42,74.19
+"Precision",81.82,85.45
+"Sensitivity",85.71,74.6
+"Specificity",60,73.33
+"F1 Score",83.72,79.66

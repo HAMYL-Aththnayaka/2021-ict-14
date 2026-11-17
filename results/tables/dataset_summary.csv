@@ -1,0 +1,7 @@
+"Feature","Minimum","Maximum","Mean","Median"
+"pelvic_incidence",26.15,129.83,60.4964838709677,58.69
+"pelvic_tilt",-6.55,49.43,17.5429032258065,16.36
+"lumbar_lordosis_angle",14,125.74,51.9307096774194,49.565
+"sacral_slope",13.37,121.43,42.9538709677419,42.405
+"pelvic_radius",70.08,163.07,117.920548387097,118.265
+"degree_spondylolisthesis",-11.06,418.54,26.2967419354839,11.765
