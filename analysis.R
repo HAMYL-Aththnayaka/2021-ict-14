@@ -439,3 +439,116 @@ cat("\nLogistic Regression Confusion Matrix:\n")
 
 print(logistic_confusion_matrix)
 
+
+# ==========================================
+# PART 7: LOGISTIC REGRESSION EVALUATION
+# ==========================================
+
+# Extract values from confusion matrix
+
+TN <- logistic_confusion_matrix["Normal", "Normal"]
+TP <- logistic_confusion_matrix["Abnormal", "Abnormal"]
+FP <- logistic_confusion_matrix["Abnormal", "Normal"]
+FN <- logistic_confusion_matrix["Normal", "Abnormal"]
+
+# Calculate evaluation metrics
+
+accuracy <- (TP + TN) / (TP + TN + FP + FN)
+
+precision <- TP / (TP + FP)
+
+sensitivity <- TP / (TP + FN)
+
+specificity <- TN / (TN + FP)
+
+f1_score <- 2 * (precision * sensitivity) /
+  (precision + sensitivity)
+
+# Display results as percentages
+
+logistic_metrics <- data.frame(
+  Metric = c(
+    "Accuracy",
+    "Precision",
+    "Sensitivity",
+    "Specificity",
+    "F1 Score"
+  ),
+  Value = round(
+    c(
+      accuracy,
+      precision,
+      sensitivity,
+      specificity,
+      f1_score
+    ) * 100,
+    2
+  )
+)
+
+cat("\nLogistic Regression Evaluation Metrics:\n")
+
+print(logistic_metrics)
+
+# Save evaluation results
+
+write.csv(
+  logistic_metrics,
+  "results/tables/logistic_regression_metrics.csv",
+  row.names = FALSE
+)
+
+cat("\nLogistic regression metrics saved successfully.\n")
+
+
+# ==========================================
+# PART 8: DECISION TREE CLASSIFICATION
+# ==========================================
+
+# Train decision tree model
+
+tree_model <- rpart(
+  class ~ .,
+  data = train_data,
+  method = "class"
+)
+
+# Display decision tree model
+
+cat("\nDecision Tree Model:\n")
+
+print(tree_model)
+
+# Visualize decision tree
+
+rpart.plot(
+  tree_model,
+  type = 3,
+  extra = 104,
+  fallen.leaves = TRUE,
+  main = "Decision Tree for Vertebral Column Classification"
+)
+
+
+# ==========================================
+# PART 9: DECISION TREE PREDICTIONS
+# ==========================================
+
+# Predict classes for testing data
+
+tree_predictions <- predict(
+  tree_model,
+  newdata = test_data,
+  type = "class"
+)
+
+# Create confusion matrix
+
+tree_confusion_matrix <- table(
+  Predicted = tree_predictions,
+  Actual = test_data$class
+)
+
+cat("\nDecision Tree Confusion Matrix:\n")
+
+print(tree_confusion_matrix)
