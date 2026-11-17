@@ -552,3 +552,166 @@ tree_confusion_matrix <- table(
 cat("\nDecision Tree Confusion Matrix:\n")
 
 print(tree_confusion_matrix)
+
+
+# ==========================================
+# PART 10: DECISION TREE EVALUATION
+# ==========================================
+
+# Extract values from confusion matrix
+
+tree_TN <- tree_confusion_matrix["Normal", "Normal"]
+tree_TP <- tree_confusion_matrix["Abnormal", "Abnormal"]
+tree_FP <- tree_confusion_matrix["Abnormal", "Normal"]
+tree_FN <- tree_confusion_matrix["Normal", "Abnormal"]
+
+# Calculate evaluation metrics
+
+tree_accuracy <- (tree_TP + tree_TN) /
+  (tree_TP + tree_TN + tree_FP + tree_FN)
+
+tree_precision <- tree_TP / (tree_TP + tree_FP)
+
+tree_sensitivity <- tree_TP / (tree_TP + tree_FN)
+
+tree_specificity <- tree_TN / (tree_TN + tree_FP)
+
+tree_f1_score <- 2 * (tree_precision * tree_sensitivity) /
+  (tree_precision + tree_sensitivity)
+
+# Create evaluation results table
+
+tree_metrics <- data.frame(
+  Metric = c(
+    "Accuracy",
+    "Precision",
+    "Sensitivity",
+    "Specificity",
+    "F1 Score"
+  ),
+  Value = round(
+    c(
+      tree_accuracy,
+      tree_precision,
+      tree_sensitivity,
+      tree_specificity,
+      tree_f1_score
+    ) * 100,
+    2
+  )
+)
+
+# Display results
+
+cat("\nDecision Tree Evaluation Metrics:\n")
+
+print(tree_metrics)
+
+# Save results
+
+write.csv(
+  tree_metrics,
+  "results/tables/decision_tree_metrics.csv",
+  row.names = FALSE
+)
+
+cat("\nDecision Tree metrics saved successfully.\n")
+
+
+# ==========================================
+# PART 11: MODEL COMPARISON
+# ==========================================
+
+# Create comparison table
+
+model_comparison <- data.frame(
+  Metric = logistic_metrics$Metric,
+  Logistic_Regression = logistic_metrics$Value,
+  Decision_Tree = tree_metrics$Value
+)
+
+cat("\nComparison of Classification Models:\n")
+
+print(model_comparison)
+
+# Save comparison table
+
+write.csv(
+  model_comparison,
+  "results/tables/model_comparison.csv",
+  row.names = FALSE
+)
+
+
+# Prepare data for comparison chart
+
+comparison_long <- data.frame(
+  Metric = rep(model_comparison$Metric, 2),
+  Model = c(
+    rep("Logistic Regression", 5),
+    rep("Decision Tree", 5)
+  ),
+  Value = c(
+    model_comparison$Logistic_Regression,
+    model_comparison$Decision_Tree
+  )
+)
+
+# Create comparison chart
+
+comparison_plot <- ggplot(
+  comparison_long,
+  aes(x = Metric, y = Value, fill = Model)
+) +
+  geom_col(position = "dodge") +
+  labs(
+    title = "Performance Comparison of Classification Models",
+    x = "Evaluation Metric",
+    y = "Performance (%)",
+    fill = "Classification Model"
+  ) +
+  ylim(0, 100) +
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(angle = 20, hjust = 1)
+  )
+
+print(comparison_plot)
+
+# Save comparison chart
+
+ggsave(
+  "results/figures/model_comparison.png",
+  comparison_plot,
+  width = 10,
+  height = 6
+)
+
+cat("\nModel comparison completed successfully.\n")
+
+
+
+# ==========================================
+# PART 12: MULTICOLLINEARITY INVESTIGATION
+# ==========================================
+
+# Check the relationship between pelvic measurements
+
+measurement_difference <- spine$pelvic_incidence -
+  (spine$pelvic_tilt + spine$sacral_slope)
+
+cat("\nPelvic measurement relationship:\n")
+
+cat(
+  "Maximum absolute difference:",
+  max(abs(measurement_difference)),
+  "\n"
+)
+
+cat(
+  "Mean absolute difference:",
+  mean(abs(measurement_difference)),
+  "\n"
+)
+
+
