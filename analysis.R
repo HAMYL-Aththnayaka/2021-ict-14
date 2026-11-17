@@ -1,7 +1,13 @@
 
 # ==========================================
 # IT4133 BIOINFORMATICS PROJECT
-# Vertebral Column Classification
+# Classification of Vertebral Column Abnormalities
+# Registration Number: 2021ICT14
+# ==========================================
+
+
+# ==========================================
+# PART 1: SETUP AND DATA IMPORT
 # ==========================================
 
 # 1. Install and load required packages
@@ -20,18 +26,26 @@ library(ggplot2)
 library(rpart)
 library(rpart.plot)
 
-# 2. Create output directories
+
+# 2. Create project output folders
 
 dir.create("data", showWarnings = FALSE)
 dir.create("results", showWarnings = FALSE)
-dir.create("results/figures",
-           recursive = TRUE,
-           showWarnings = FALSE)
-dir.create("results/tables",
-           recursive = TRUE,
-           showWarnings = FALSE)
 
-# Download the UCI dataset
+dir.create(
+  "results/figures",
+  recursive = TRUE,
+  showWarnings = FALSE
+)
+
+dir.create(
+  "results/tables",
+  recursive = TRUE,
+  showWarnings = FALSE
+)
+
+
+# 3. Download the dataset if it is not already available
 
 data_url <- "https://raw.githubusercontent.com/MinorProphet/Vertebral-Column-Data-Set/master/column_2C.dat"
 
@@ -45,14 +59,17 @@ if (!file.exists(data_file)) {
   )
 }
 
-cat("Dataset downloaded successfully!\n")
-# 4. Import dataset
+cat("Dataset file is available.\n")
+
+
+# 4. Import the dataset
 
 spine <- read.table(
   data_file,
   header = FALSE,
   stringsAsFactors = FALSE
 )
+
 
 # 5. Assign column names
 
@@ -69,61 +86,73 @@ colnames(spine) <- c(
 
 # 6. Convert original class labels
 
-# Check the original labels
-unique(spine$class)
-
 spine$class <- factor(
-  ifelse(spine$class == "NO", "Normal", "Abnormal"),
+  ifelse(
+    spine$class == "NO",
+    "Normal",
+    "Abnormal"
+  ),
   levels = c("Normal", "Abnormal")
 )
 
+
+# 7. Inspect the imported dataset
+
+cat("\nDataset dimensions:\n")
+print(dim(spine))
+
+cat("\nDataset structure:\n")
+str(spine)
+
+cat("\nFirst six records:\n")
+print(head(spine))
+
+cat("\nClass distribution:\n")
 print(table(spine$class))
 
-# Check the corrected class distribution
-table(spine$class)
-
-
-# Display first six records
-
-head(spine)
-
-# Dataset dimensions
-
-dim(spine)
-
-# Dataset structure
-
-str(spine)
 
 # ==========================================
 # PART 2: DATA QUALITY CHECKS
 # ==========================================
 
 # 1. Check missing values
+
 cat("\nMissing values:\n")
 print(colSums(is.na(spine)))
 
+
 # 2. Check duplicate records
+
 cat("\nDuplicate records:\n")
 print(sum(duplicated(spine)))
 
-# 3. Check dataset structure
-cat("\nDataset structure:\n")
-str(spine)
 
-# 4. Summary statistics
+# 3. Display dataset summary statistics
+
 cat("\nSummary statistics:\n")
-summary(spine)
+print(summary(spine))
 
-# 5. Check class distribution
+
+# 4. Check class distribution
+
 cat("\nClass distribution:\n")
 print(table(spine$class))
 
-# 6. Check class percentages
-cat("\nClass percentages:\n")
-print(round(prop.table(table(spine$class)) * 100, 2))
 
-# 7. Save dataset summary
+# 5. Calculate class percentages
+
+cat("\nClass percentages:\n")
+
+print(
+  round(
+    prop.table(table(spine$class)) * 100,
+    2
+  )
+)
+
+
+# 6. Create and save numerical summary table
+
 numeric_summary <- data.frame(
   Feature = names(spine)[1:6],
   Minimum = sapply(spine[1:6], min),
@@ -138,8 +167,7 @@ write.csv(
   row.names = FALSE
 )
 
-cat("\nDataset summary saved successfully!\n")
-
+cat("\nDataset summary saved successfully.\n")
 
 
 # ==========================================
@@ -148,7 +176,10 @@ cat("\nDataset summary saved successfully!\n")
 
 # 1. Class distribution bar chart
 
-class_plot <- ggplot(spine, aes(x = class, fill = class)) +
+class_plot <- ggplot(
+  spine,
+  aes(x = class, fill = class)
+) +
   geom_bar() +
   labs(
     title = "Distribution of Vertebral Column Classes",
@@ -157,16 +188,16 @@ class_plot <- ggplot(spine, aes(x = class, fill = class)) +
   ) +
   theme_minimal()
 
-# Display graph
 print(class_plot)
 
-# Save graph
 ggsave(
   "results/figures/class_distribution.png",
   class_plot,
   width = 7,
   height = 5
 )
+
+
 # 2. Boxplots comparing measurements by class
 
 spine_long <- reshape(
@@ -183,7 +214,11 @@ boxplot_plot <- ggplot(
   aes(x = class, y = Measurement, fill = class)
 ) +
   geom_boxplot() +
-  facet_wrap(~ Feature, scales = "free", ncol = 2) +
+  facet_wrap(
+    ~ Feature,
+    scales = "free",
+    ncol = 2
+  ) +
   labs(
     title = "Biomechanical Measurements by Vertebral Column Class",
     x = "Classification",
@@ -195,23 +230,26 @@ boxplot_plot <- ggplot(
     legend.position = "none"
   )
 
-# Display graph
 print(boxplot_plot)
 
-# Save graph
 ggsave(
   "results/figures/feature_boxplots.png",
   boxplot_plot,
   width = 10,
   height = 9
 )
+
+
 # 3. Correlation analysis
 
 correlation_matrix <- cor(spine[1:6])
 
+cat("\nCorrelation matrix:\n")
 print(round(correlation_matrix, 2))
 
-# Convert correlation matrix into a format for ggplot
+
+# 4. Correlation heatmap
+
 correlation_data <- as.data.frame(
   as.table(correlation_matrix)
 )
@@ -221,7 +259,10 @@ correlation_plot <- ggplot(
   aes(x = Var1, y = Var2, fill = Freq)
 ) +
   geom_tile() +
-  geom_text(aes(label = round(Freq, 2)), size = 3) +
+  geom_text(
+    aes(label = round(Freq, 2)),
+    size = 3
+  ) +
   scale_fill_gradient2(
     low = "blue",
     mid = "white",
@@ -242,29 +283,38 @@ correlation_plot <- ggplot(
     )
   )
 
-# Display graph
 print(correlation_plot)
 
-# Save graph
-ggsave(http://127.0.0.1:42377/graphics/d9d4dff6-7e8b-4daf-a1de-2ec729c52607.png
+ggsave(
   "results/figures/correlation_heatmap.png",
   correlation_plot,
   width = 9,
   height = 7
 )
 
+
 # ==========================================
 # PART 4: DATA PREPARATION
 # ==========================================
 
 # Set seed for reproducibility
+
 set.seed(123)
 
-# Separate observations by class
-normal_data <- spine[spine$class == "Normal", ]
-abnormal_data <- spine[spine$class == "Abnormal", ]
 
-# Randomly select 70% from each class for training
+# 1. Separate observations by class
+
+normal_data <- spine[
+  spine$class == "Normal",
+]
+
+abnormal_data <- spine[
+  spine$class == "Abnormal",
+]
+
+
+# 2. Select 70% of each class for training
+
 normal_train_index <- sample(
   seq_len(nrow(normal_data)),
   size = floor(0.70 * nrow(normal_data))
@@ -275,37 +325,54 @@ abnormal_train_index <- sample(
   size = floor(0.70 * nrow(abnormal_data))
 )
 
-# Combine training observations
+
+# 3. Create training dataset
+
 train_data <- rbind(
   normal_data[normal_train_index, ],
   abnormal_data[abnormal_train_index, ]
 )
 
-# Remaining observations become testing data
+
+# 4. Create testing dataset
+
 test_data <- rbind(
   normal_data[-normal_train_index, ],
   abnormal_data[-abnormal_train_index, ]
 )
 
-# Shuffle both datasets
+
+# 5. Shuffle both datasets
+
 train_data <- train_data[
-  sample(seq_len(nrow(train_data))), 
+  sample(seq_len(nrow(train_data))),
 ]
 
 test_data <- test_data[
-  sample(seq_len(nrow(test_data))), 
+  sample(seq_len(nrow(test_data))),
 ]
 
-# Check dataset sizes
-cat("Training dataset size:\n")
+
+# 6. Display dataset sizes
+
+cat("\nTraining dataset size:\n")
 print(dim(train_data))
 
 cat("\nTesting dataset size:\n")
 print(dim(test_data))
 
-# Check class distribution
+
+# 7. Display class distributions
+
 cat("\nTraining class distribution:\n")
 print(table(train_data$class))
 
 cat("\nTesting class distribution:\n")
 print(table(test_data$class))
+
+
+# ==========================================
+# END OF CURRENT ANALYSIS
+# ==========================================
+
+cat("\nData preparation and EDA completed successfully!\n")
