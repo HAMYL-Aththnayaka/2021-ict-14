@@ -376,3 +376,66 @@ print(table(test_data$class))
 # ==========================================
 
 cat("\nData preparation and EDA completed successfully!\n")
+
+
+# ==========================================
+# PART 5: LOGISTIC REGRESSION
+# ==========================================
+
+# Train logistic regression model
+
+logistic_model <- glm(
+  class ~ pelvic_incidence +
+    pelvic_tilt +
+    lumbar_lordosis_angle +
+    sacral_slope +
+    pelvic_radius +
+    degree_spondylolisthesis,
+  data = train_data,
+  family = binomial
+)
+
+# Display model results
+
+cat("\nLogistic Regression Model:\n")
+
+print(summary(logistic_model))
+
+
+
+# ==========================================
+# PART 6: LOGISTIC REGRESSION PREDICTIONS
+# ==========================================
+
+# Predict probabilities for testing data
+
+logistic_probabilities <- predict(
+  logistic_model,
+  newdata = test_data,
+  type = "response"
+)
+
+# Convert probabilities into class predictions
+
+logistic_predictions <- ifelse(
+  logistic_probabilities >= 0.5,
+  "Abnormal",
+  "Normal"
+)
+
+logistic_predictions <- factor(
+  logistic_predictions,
+  levels = c("Normal", "Abnormal")
+)
+
+# Create confusion matrix
+
+logistic_confusion_matrix <- table(
+  Predicted = logistic_predictions,
+  Actual = test_data$class
+)
+
+cat("\nLogistic Regression Confusion Matrix:\n")
+
+print(logistic_confusion_matrix)
+
