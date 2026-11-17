@@ -268,23 +268,26 @@ Refer to `results/tables/statistical_tests.csv` for the complete statistical res
 
 **Significant features:** [INSERT FEATURES BASED ON ADJUSTED P-VALUES]
 
-### 5.6 Classification Model Performance
+###### ### 5.6 Classification Model Performance
 
-Two classification models were evaluated using the same test dataset.
+The performance of the revised logistic regression model and decision tree model was evaluated using the testing dataset.
 
-| Evaluation metric | Logistic Regression | Decision Tree |
+| Evaluation metric | Logistic Regression (Revised) | Decision Tree |
 |---|---:|---:|
-| Accuracy | [INSERT] | [INSERT] |
-| Precision | [INSERT] | [INSERT] |
-| Recall | [INSERT] | [INSERT] |
-| Specificity | [INSERT] | [INSERT] |
-| F1-score | [INSERT] | [INSERT] |
+| Accuracy | 78.49% | 74.19% |
+| Precision | 83.08% | 85.45% |
+| Recall (Sensitivity) | 85.71% | 74.60% |
+| Specificity | 63.33% | 73.33% |
+| F1-score | 84.38% | 79.66% |
 
-![Model Comparison](results/figures/model_comparison.png)
+The revised logistic regression model achieved an accuracy of 78.49%, outperforming the decision tree model, which achieved 74.19%.
 
-The model comparison illustrates differences in predictive performance between logistic regression and decision tree classification.
+The revised logistic regression model also achieved higher recall (85.71%) and F1-score (84.38%). This indicates that it identified a greater proportion of abnormal observations and achieved a better balance between precision and recall.
 
-The confusion matrices are available in the `results/tables/` directory.
+However, the decision tree achieved higher precision (85.45%) and specificity (73.33%) compared with the revised logistic regression model. This indicates better performance in correctly identifying normal observations and a higher proportion of correct predictions among cases classified as abnormal.
+
+Overall, the revised logistic regression model demonstrated better performance in accuracy, recall and F1-score, while the decision tree performed better in precision and specificity. Based on these results, the revised logistic regression model provided the stronger overall performance on the selected test dataset.
+
 
 ### 5.7 Feature Importance
 
@@ -294,21 +297,23 @@ The decision tree variable importance analysis was used to identify which biomec
 
 **Most important feature:** [INSERT FROM ACTUAL OUTPUT]
 
-## 6. Discussion
+## ## 6. Discussion
 
-The project demonstrates how biomedical measurements can be analysed using statistical methods and machine learning algorithms.
+The analysis investigated the use of biomechanical measurements to classify vertebral column abnormalities using statistical methods and machine learning algorithms.
 
-Exploratory data analysis provides an understanding of the distribution of biomechanical measurements and their differences between normal and abnormal groups.
+Exploratory data analysis was used to examine the distributions of the six biomechanical measurements. The visualisations provided an overview of differences between normal and abnormal observations. Correlation analysis was also performed to investigate relationships between the numerical features.
 
-Correlation analysis helps identify relationships between the measurements, while the Wilcoxon rank-sum tests investigate differences between the two classification groups.
+The Wilcoxon rank-sum tests provided a statistical approach for examining differences in feature distributions between the two classification groups. The Bonferroni correction was applied to account for multiple comparisons.
 
-The logistic regression model provides a statistical classification approach based on the relationship between predictor variables and the binary target variable. In comparison, the decision tree provides a rule-based classification structure that can be visualised and interpreted.
+The classification results showed that the revised logistic regression model achieved an accuracy of 78.49%, compared with 74.19% for the decision tree. Logistic regression also achieved a higher recall of 85.71% and F1-score of 84.38%.
 
-The performance comparison should consider all evaluation metrics rather than relying exclusively on accuracy. In particular, recall is important when examining the model's ability to identify abnormal observations, while specificity measures its ability to correctly identify normal observations.
+These results suggest that the revised logistic regression model was more effective at identifying abnormal observations in the selected test dataset. However, the decision tree achieved higher precision and specificity, indicating that it performed better in correctly identifying normal observations and in the precision of its abnormal predictions.
 
-The actual model comparison results should be used to determine which approach performed better on the selected test dataset.
+The results demonstrate that different classification algorithms can produce different strengths depending on the evaluation metric. Logistic regression provided stronger overall performance based on accuracy, recall and F1-score, whereas the decision tree provided better precision and specificity.
 
-Feature importance also provides additional insight into which measurements contributed most to the decision tree model. However, feature importance does not establish a causal relationship between a measurement and a spinal abnormality.
+The feature importance analysis of the decision tree can provide additional insight into the measurements used for classification. However, feature importance indicates the contribution of variables to the model and does not establish a causal relationship with vertebral column abnormalities.
+
+Overall, the findings indicate that biomechanical measurements contain useful information for distinguishing between normal and abnormal vertebral column observations. Nevertheless, the results should be interpreted within the limitations of the dataset and experimental design.
 
 ## 7. Limitations
 
